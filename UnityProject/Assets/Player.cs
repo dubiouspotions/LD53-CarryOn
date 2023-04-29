@@ -19,6 +19,13 @@ public class Player : MonoBehaviour {
     public LayerMask GroundLayer;
     public bool isGrounded;
 
+    public Transform Arms;
+    public float ArmRadius = 0.25f;
+    public LayerMask BoxesLayer;
+
+    GameObject carriedBox;
+    Vector3 boxGrabOffset;
+
     private void Update() {
         //check if player is on the ground
         isGrounded = Physics2D.OverlapCircle(GroundCheckObject.position, GroundCheckRadius, GroundLayer);
@@ -35,6 +42,24 @@ public class Player : MonoBehaviour {
         if (Graphics != null) {
             Graphics.transform.eulerAngles = Vector3.zero;
         }
+
+
+
+        if (Input.GetKeyDown(KeyCode.E)) {
+            if (carriedBox == null) {
+                var boxCollider = Physics2D.OverlapCircle(Arms.position, ArmRadius, BoxesLayer);
+                if (boxCollider != null) {
+                    carriedBox = boxCollider.gameObject;
+                    boxGrabOffset = carriedBox.transform.position - Arms.position;
+                    boxGrabOffset.y += 0.2f;
+                }
+            } else {
+                carriedBox = null;
+            }
+        }
+        if (carriedBox != null && Arms != null) {
+            carriedBox.transform.position = Arms.position + boxGrabOffset;
+        }
     }
 
     private void FixedUpdate() {
@@ -42,7 +67,9 @@ public class Player : MonoBehaviour {
     }
 
     private void OnDrawGizmos() {
-        if (GroundCheckObject == null) return;
-        Gizmos.DrawSphere(GroundCheckObject.position, GroundCheckRadius);
+        if (GroundCheckObject != null)
+            Gizmos.DrawSphere(GroundCheckObject.position, GroundCheckRadius);
+        if (Arms != null)
+            Gizmos.DrawSphere(Arms.position, ArmRadius);
     }
 }
