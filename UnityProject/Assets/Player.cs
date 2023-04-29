@@ -5,38 +5,44 @@ using UnityEngine;
 public class Player : MonoBehaviour {
 
     Rigidbody2D rb;
+    public Transform Graphics;
+
     // Start is called before the first frame update
     void Start() {
         rb = GetComponent<Rigidbody2D>();
     }
 
-    public float speed = 50f;
-
-    Vector2 GetMovement() {
-        Vector2 move = new Vector2();
-        if (Input.GetKey(KeyCode.RightArrow)) {
-            move.x += 1f;
-        }
-
-        if (Input.GetKey(KeyCode.LeftArrow)) {
-            move.x -= 1f;
-        }
-
-        if (Input.GetKey(KeyCode.UpArrow)) {
-            move.y += 1;
-        }
-
-        if (Input.GetKey(KeyCode.DownArrow)) {
-            move.y -= 1;
-        }
-        return move;
-    }
+    public float MoveSpeed = 50f;
+    public float JumpForce = 5f;
+    public Transform GroundCheckObject;
+    public float GroundCheckRadius = 0.1f;
+    public LayerMask GroundLayer;
+    public bool isGrounded;
 
     private void Update() {
-        var move = GetMovement() * speed * Time.deltaTime;
+        //check if player is on the ground
+        isGrounded = Physics2D.OverlapCircle(GroundCheckObject.position, GroundCheckRadius, GroundLayer);
 
-        rb.AddForce(move);
+        //jump into the air
+        if (isGrounded && Input.GetButtonDown("Jump")) {
+            rb.velocity += new Vector2(0, JumpForce);
+        }
 
-        // transform.position += new Vector3(move.x, move.y, 0f);
+        // move horizontally
+        rb.velocity = new Vector2(Input.GetAxisRaw("Horizontal") * MoveSpeed, rb.velocity.y);
+
+
+        if (Graphics != null) {
+            Graphics.transform.eulerAngles = Vector3.zero;
+        }
+    }
+
+    private void FixedUpdate() {
+
+    }
+
+    private void OnDrawGizmos() {
+        if (GroundCheckObject == null) return;
+        Gizmos.DrawSphere(GroundCheckObject.position, GroundCheckRadius);
     }
 }
