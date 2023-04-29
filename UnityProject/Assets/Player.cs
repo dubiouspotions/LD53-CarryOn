@@ -19,17 +19,27 @@ public class Player : MonoBehaviour {
     public float ArmRadius = 0.25f;
     public LayerMask BoxesLayer;
 
-    GameObject carriedBox;
-    Vector3 boxGrabOffset;
-    Vector3 armInitialPos;
+    public GameObject carriedBox;
+    public Vector3 boxGrabOffset;
+
+    public Transform ThrowTarget;
+    public float ThrowTargetRadius;
 
     public SpriteRenderer SpriteRenderer;
+    /// <summary>
+    ///  How fast a picked up box rotates to straight
+    /// </summary>
+    public float PickupStraighteningSpeed = 30f;
+    /// <summary>
+    /// How fast a box is picked up
+    /// </summary>
+    public float PickupSpeed = 30f;
+    public Vector2 throwForce = new Vector2(30, 30);
 
 
     // Start is called before the first frame update
     void Start() {
         rb = GetComponent<Rigidbody2D>();
-        armInitialPos = Arms.position - Arms.parent.position;
     }
 
     float Deadzoned(float value, float absmax) {
@@ -56,6 +66,7 @@ public class Player : MonoBehaviour {
             Graphics.transform.eulerAngles = Vector3.zero;
         }
 
+
         // are we moving?
         var vx = Deadzoned(rb.velocity.x, 0.1f);
         if (Mathf.Abs(vx) > 0) {
@@ -68,33 +79,70 @@ public class Player : MonoBehaviour {
 
         // --------Box carrying
 
-        if (Input.GetKeyDown(KeyCode.E)) {
+        var throwBox = Input.GetKeyDown(KeyCode.E);
+        var grabBox = Input.GetKeyDown(KeyCode.S);
+
+        if (grabBox || throwBox) {
             if (carriedBox == null) {
                 var boxCollider = Physics2D.OverlapCircle(Arms.position, ArmRadius, BoxesLayer);
                 if (boxCollider != null) {
                     carriedBox = boxCollider.gameObject;
-                    boxGrabOffset = carriedBox.transform.position - transform.position;
+                    boxGrabOffset = carriedBox.transform.position - Arms.position;
                     boxGrabOffset.y += 0.2f;
                     carriedBox.GetComponent<Rigidbody2D>().gravityScale = 0;
+                    carriedBox.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeRotation;
+                    Physics2D.IgnoreCollision(GetComponentInChildren<Collider2D>(), boxCollider, true);
                 }
-            } else {
+            } else if (carriedBox) {
                 carriedBox.GetComponent<Rigidbody2D>().gravityScale = 1;
+                carriedBox.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.None;
+                Physics2D.IgnoreCollision(GetComponentInChildren<Collider2D>(), carriedBox.GetComponentInChildren<Collider2D>(), false);
+
+                if (throwBox) {
+
+                    carriedBox.GetComponent<Rigidbody2D>().AddForce(throwForce, ForceMode2D.Force);
+                }
                 carriedBox = null;
+
+                var targetBox = Physics2D.OverlapCircle(ThrowTarget.position, ThrowTargetRadius, LayerMask.NameToLayer("Boxes")) as BoxCollider2D;
+                if (targetBox != null) {
+                    var targetPos = targetBox.transform.position;
+                    targetPos.y += targetBox.size.y / 2;
+                    Gizmos.DrawSphere(targetBox.transform.position, 0.2f);
+                }
             }
         }
 
     }
 
     private void FixedUpdate() {
+
+        UpdateCarriedBox();
+    }
+
+    void UpdateCarriedBox() {
         if (carriedBox != null && Arms != null) {
-            carriedBox.transform.position = transform.position + boxGrabOffset;
+            var box = carriedBox.GetComponentInChildren<BoxCollider2D>();
+            var boxSize = box.size / 2f;
+            print(boxGrabOffset.y + " " + boxSize.y);
+            if (boxGrabOffset.y < boxSize.y)
+                boxGrabOffset.y += PickupSpeed * Time.deltaTime;
+            carriedBox.transform.position = Arms.position + boxGrabOffset;
+
+            var rot = carriedBox.transform.rotation.eulerAngles.z;
+            var newRot = Quaternion.Euler(0, 0, Mathf.MoveTowardsAngle(
+                rot, (int)(rot / 90) * 90, PickupStraighteningSpeed * Time.deltaTime
+            ));
         }
     }
 
     private void OnDrawGizmos() {
+        UpdateCarriedBox();
         if (GroundCheckObject != null)
             Gizmos.DrawSphere(GroundCheckObject.position, GroundCheckRadius);
         if (Arms != null)
             Gizmos.DrawSphere(Arms.position, ArmRadius);
+        if (ThrowTarget != null)
+            Gizmos.DrawSphere(ThrowTarget.position, ThrowTargetRadius);
     }
 }
