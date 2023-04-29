@@ -15,7 +15,6 @@ public class Game : MonoBehaviour {
     }
 
     public void StartGame() {
-        print("HEEEJ");
-        SceneManager.LoadScene("SampleScene", LoadSceneMode.Single);
+        SceneManager.LoadScene("Level", LoadSceneMode.Single);
     }
 }
