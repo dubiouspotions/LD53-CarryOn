@@ -10,6 +10,8 @@ public class Player : MonoBehaviour {
 
     public float MoveSpeed = 50f;
     public float JumpForce = 30f;
+    // How fast to stop without input
+    public float MovementDampening = 0.2f;
 
 
     public Transform GroundCheckObject;
@@ -23,7 +25,8 @@ public class Player : MonoBehaviour {
     public float hangTime = 0.2f;
     private float hangCounter;
 
-    public Transform Arms;
+    public Transform ArmsStanding;
+    public Transform ArmsDucking;
     public float ArmRadius = 0.25f;
 
     public Transform Feet;
@@ -50,7 +53,6 @@ public class Player : MonoBehaviour {
     public Animator Animator;
     public bool IsDucking;
 
-
     // Start is called before the first frame update
     void Start() {
         rb = GetComponent<Rigidbody2D>();
@@ -59,7 +61,7 @@ public class Player : MonoBehaviour {
         colliderContactFilter.SetLayerMask(GroundLayer);
     }
 
-    float Deadzoned(float value, float absmax) {
+    float Deadzoned(float value, float absmax = 0.1f) {
         if (Mathf.Abs(value) < value) return 0;
         return value;
     }
@@ -72,15 +74,15 @@ public class Player : MonoBehaviour {
 
         colliderList.Clear();
         if (Physics2D.OverlapCollider(GroundCheckObject.GetComponent<BoxCollider2D>(), colliderContactFilter, colliderList) > 0) {
-          isGrounded = true;
+            isGrounded = true;
         } else {
-          isGrounded = false;
+            isGrounded = false;
         }
 
         if (isGrounded) {
-          hangCounter = hangTime;
+            hangCounter = hangTime;
         } else {
-          hangCounter -= Time.deltaTime;
+            hangCounter -= Time.deltaTime;
         }
 
         Animator = GetComponentInChildren<Animator>();
@@ -92,21 +94,34 @@ public class Player : MonoBehaviour {
 
         // Allow jumps to semi-interrupted if the jump button is released early mid-jump
         if (Input.GetButtonUp("Jump") && rb.velocity.y > 0) {
-          rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
+            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
         }
 
-        // move horizontally
-        rb.velocity = new Vector2(Deadzoned(Input.GetAxisRaw("Horizontal"), 0.1f) * MoveSpeed, Deadzoned(rb.velocity.y, 0.1f));
+        float xInput = Input.GetAxisRaw("Horizontal");
+        if (xInput != 0f) {
+            rb.AddForce(new Vector2(
+                Deadzoned(xInput, 0.1f) * MoveSpeed * 100,
+                Deadzoned(rb.velocity.y, 0.1f)
+            ));
+        }
+        // Limit speed or apply dampening
+        if (Mathf.Abs(rb.velocity.x) > MoveSpeed || xInput == 0) {
+            float dampening = xInput == 0 ? MovementDampening : 1;
+            float maxSpeed = xInput == 0 ? Mathf.Abs(rb.velocity.x) * dampening : MoveSpeed;
+            rb.velocity = new Vector2(
+                Deadzoned(maxSpeed * Mathf.Sign(rb.velocity.x)),
+                rb.velocity.y
+            );
+        }
 
         if (Graphics != null) {
             Graphics.transform.eulerAngles = Vector3.zero;
         }
 
         // are we moving?
-        var vx = Deadzoned(rb.velocity.x, 0.1f);
-        if (Mathf.Abs(vx) > 0) {
+        if (Mathf.Abs(xInput) > 0) {
             // are we facing where we think?
-            var facingLeft = vx < 0;
+            var facingLeft = xInput < 0;
             var s = Graphics.transform.localScale;
             s.x = facingLeft ? -1 : 1;
             Graphics.transform.localScale = s;
@@ -125,15 +140,14 @@ public class Player : MonoBehaviour {
 
         // --------Box carrying
 
-        var throwBox = Input.GetKeyDown(KeyCode.E);
-        var grabBox = Input.GetKeyDown(KeyCode.S);
+        var grabBox = Input.GetKeyDown(KeyCode.E);
 
-        if (grabBox || throwBox) {
+        if (grabBox) {
             if (carriedBox == null) {
-                var boxCollider = Physics2D.OverlapCircle(Arms.position, ArmRadius, BoxesLayer);
+                var boxCollider = Physics2D.OverlapCircle(ArmsStanding.position, ArmRadius, BoxesLayer);
                 if (boxCollider != null) {
                     carriedBox = boxCollider.gameObject;
-                    boxGrabOffset = carriedBox.transform.position - Arms.position;
+                    boxGrabOffset = carriedBox.transform.position - ArmsStanding.position;
                     boxGrabOffset.y += 0.2f;
                     carriedBox.GetComponent<Rigidbody2D>().gravityScale = 0;
                     carriedBox.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeRotation;
@@ -143,11 +157,6 @@ public class Player : MonoBehaviour {
                 carriedBox.GetComponent<Rigidbody2D>().gravityScale = 1;
                 carriedBox.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.None;
                 Physics2D.IgnoreCollision(GetComponentInChildren<Collider2D>(), carriedBox.GetComponentInChildren<Collider2D>(), false);
-
-                if (throwBox) {
-
-                    carriedBox.GetComponent<Rigidbody2D>().AddForce(throwForce, ForceMode2D.Force);
-                }
                 carriedBox = null;
 
                 var targetBox = Physics2D.OverlapCircle(ThrowTarget.position, ThrowTargetRadius, LayerMask.NameToLayer("Boxes")) as BoxCollider2D;
@@ -167,13 +176,13 @@ public class Player : MonoBehaviour {
     }
 
     void UpdateCarriedBox() {
-        if (carriedBox != null && Arms != null) {
+        if (carriedBox != null && ArmsStanding != null) {
             var box = carriedBox.GetComponentInChildren<BoxCollider2D>();
             var boxSize = box.size / 2f;
             print(boxGrabOffset.y + " " + boxSize.y);
             if (boxGrabOffset.y < boxSize.y)
                 boxGrabOffset.y += PickupSpeed * Time.deltaTime;
-            carriedBox.transform.position = Arms.position + boxGrabOffset;
+            carriedBox.transform.position = ArmsStanding.position + boxGrabOffset;
 
             var rot = carriedBox.transform.rotation.eulerAngles.z;
             var newRot = Quaternion.Euler(0, 0, Mathf.MoveTowardsAngle(
@@ -186,8 +195,10 @@ public class Player : MonoBehaviour {
         UpdateCarriedBox();
         if (GroundCheckObject != null)
             Gizmos.DrawSphere(GroundCheckObject.position, GroundCheckRadius);
-        if (Arms != null)
-            Gizmos.DrawSphere(Arms.position, ArmRadius);
+        if (ArmsStanding != null)
+            Gizmos.DrawSphere(ArmsStanding.position, ArmRadius);
+        if (ArmsDucking != null)
+            Gizmos.DrawSphere(ArmsDucking.position, ArmRadius);
         if (ThrowTarget != null)
             Gizmos.DrawSphere(ThrowTarget.position, ThrowTargetRadius);
     }
