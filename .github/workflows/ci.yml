@@ -44,4 +44,4 @@ jobs:
       - name: Itch.io
         env: 
           BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
-        run: butler push ./build/web ${{ secrets.ITCHIO_USERNAME }}/${{ secrets.ITCHIO_GAME }}:web
+        run: itch/butler push ./build/web ${{ secrets.ITCHIO_USERNAME }}/${{ secrets.ITCHIO_GAME }}:web
