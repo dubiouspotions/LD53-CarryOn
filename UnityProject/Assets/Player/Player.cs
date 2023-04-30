@@ -9,14 +9,25 @@ public class Player : MonoBehaviour {
 
 
     public float MoveSpeed = 50f;
-    public float JumpForce = 5f;
+    public float JumpForce = 30f;
+
+
     public Transform GroundCheckObject;
     public float GroundCheckRadius = 0.1f;
     public LayerMask GroundLayer;
     public bool isGrounded;
+    public List<Collider2D> colliderList;
+    private ContactFilter2D colliderContactFilter = new ContactFilter2D();
+
+
+    public float hangTime = 0.2f;
+    private float hangCounter;
 
     public Transform Arms;
     public float ArmRadius = 0.25f;
+
+    public Transform Feet;
+
     public LayerMask BoxesLayer;
 
     public GameObject carriedBox;
@@ -43,6 +54,9 @@ public class Player : MonoBehaviour {
     // Start is called before the first frame update
     void Start() {
         rb = GetComponent<Rigidbody2D>();
+
+        colliderList = new List<Collider2D>();
+        colliderContactFilter.SetLayerMask(GroundLayer);
     }
 
     float Deadzoned(float value, float absmax) {
@@ -53,24 +67,40 @@ public class Player : MonoBehaviour {
     private void Update() {
 
         // ---------- Movement
-        //check if player is on the ground
-        isGrounded = Physics2D.OverlapCircle(GroundCheckObject.position, GroundCheckRadius, GroundLayer);
+        //check if player is on the ground -- Replaced by Box collider triggers above
+        //isGrounded = Physics2D.OverlapCircle(GroundCheckObject.position, GroundCheckRadius, GroundLayer);
+
+        colliderList.Clear();
+        if (Physics2D.OverlapCollider(GroundCheckObject.GetComponent<BoxCollider2D>(), colliderContactFilter, colliderList) > 0) {
+          isGrounded = true;
+        } else {
+          isGrounded = false;
+        }
+
+        if (isGrounded) {
+          hangCounter = hangTime;
+        } else {
+          hangCounter -= Time.deltaTime;
+        }
 
         Animator = GetComponentInChildren<Animator>();
 
         //jump into the air
-        if (isGrounded && Input.GetButtonDown("Jump")) {
+        if (hangCounter > 0f && Input.GetButtonDown("Jump")) {
             rb.velocity += new Vector2(0, JumpForce);
+        }
+
+        // Allow jumps to semi-interrupted if the jump button is released early mid-jump
+        if (Input.GetButtonUp("Jump") && rb.velocity.y > 0) {
+          rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
         }
 
         // move horizontally
         rb.velocity = new Vector2(Deadzoned(Input.GetAxisRaw("Horizontal"), 0.1f) * MoveSpeed, Deadzoned(rb.velocity.y, 0.1f));
 
-
         if (Graphics != null) {
             Graphics.transform.eulerAngles = Vector3.zero;
         }
-
 
         // are we moving?
         var vx = Deadzoned(rb.velocity.x, 0.1f);
