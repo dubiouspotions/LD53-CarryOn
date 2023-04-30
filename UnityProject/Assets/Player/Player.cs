@@ -54,6 +54,8 @@ public class Player : MonoBehaviour {
 
     public Animator Animator;
     public bool IsDucking;
+    public bool IsHandsup;
+    public bool IsCarrying => carriedBox != null;
 
     bool IsFacingLeft;
     // Start is called before the first frame update
@@ -141,10 +143,40 @@ public class Player : MonoBehaviour {
             Animator.SetFloat("VerticalSpeed", rb.velocity.y);
             Animator.SetBool("HasBox", carriedBox != null);
             Animator.SetBool("Ducking", IsDucking);
+            Animator.SetBool("HandsUp", IsHandsup);
         }
 
-        // --------Ducking
-        IsDucking = Input.GetKey(KeyCode.S) && carriedBox == null;
+        // -------- Up and down
+        // standing + up => nothing
+        // standing + down => ducking
+        // holding + up => handsup
+        // holding + down + handsup => !handsup
+
+        if (Input.GetKeyDown(KeyCode.W)) { // up
+            if (IsCarrying) {
+                IsHandsup = true;
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.S)) {
+            if (IsHandsup) {
+                IsHandsup = false;
+            } else if (!IsCarrying) {
+                IsDucking = true;
+            }
+        }
+
+        if (Input.GetKeyUp(KeyCode.S)) {
+            IsDucking = false;
+        }
+
+        if (IsHandsup && !IsCarrying) {
+            IsHandsup = false;
+        }
+
+        if (IsDucking && IsCarrying) {
+            IsDucking = false;
+        }
 
         // --------Box carrying
 
