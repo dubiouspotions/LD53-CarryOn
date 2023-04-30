@@ -7,7 +7,7 @@ public class Box : MonoBehaviour {
     private SpriteRenderer sr;
     private BoxCollider2D bc;
     private Rigidbody2D rb;
-
+    public Transform CenterOfMass;
 
 
     void Start() {
@@ -15,11 +15,11 @@ public class Box : MonoBehaviour {
         bc = GetComponent<BoxCollider2D>();
         rb = GetComponent<Rigidbody2D>();
         UpdateSpriteScale();
-        rb.centerOfMass.Set(rb.centerOfMass.x, rb.centerOfMass.y + bc.size.y / 3);
+
     }
 
     void Update() {
-      
+
 
     }
 
@@ -37,9 +37,17 @@ public class Box : MonoBehaviour {
         sr.size = bc.size;
         sr.transform.localScale = new Vector3(bc.size.x / sr.sprite.bounds.size.x, bc.size.y / sr.sprite.bounds.size.y, 1f);
         GetComponentInChildren<TextMesh>().text = rb.mass.ToString("N0") + "Kg";
+
+        var centerOfMass = rb.centerOfMass;
+        if (CenterOfMass != null) {
+            centerOfMass = CenterOfMass.position - transform.position;
+        }
+
+        rb.centerOfMass = centerOfMass;
     }
 
     private void OnDrawGizmosSelected() {
         UpdateSpriteScale();
+        Gizmos.DrawSphere(rb.position + rb.centerOfMass, .1f);
     }
 }
