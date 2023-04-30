@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour {
 
@@ -69,6 +70,9 @@ public class Player : MonoBehaviour {
     }
 
     private void Update() {
+
+        CheckGameOver();
+        
 
         // ---------- Movement
         //check if player is on the ground -- Replaced by Box collider triggers above
@@ -195,6 +199,13 @@ public class Player : MonoBehaviour {
             var newRot = Quaternion.Euler(0, 0, Mathf.MoveTowardsAngle(
                 rot, (int)(rot / 90) * 90, PickupStraighteningSpeed * Time.deltaTime
             ));
+        }
+    }
+
+    void CheckGameOver(){
+        // Trigger game over if the player falls below a certain y value
+        if (transform.position.y <= -30) {
+          SceneManager.LoadScene("GameOver", LoadSceneMode.Single);
         }
     }
 
