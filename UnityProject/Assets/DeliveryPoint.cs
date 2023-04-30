@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+
 
 public class DeliveryPoint : MonoBehaviour
 {
@@ -26,7 +28,8 @@ public class DeliveryPoint : MonoBehaviour
       if (other.GetComponent<Box>() != null) {
         isTriggeredByBox = true;
 
-        //DisplayVictoryScene(); // this method exists in Game.cs - how to run it from here?
+        // This should probably be handled in Game.cs but I don't know how to easily access it from here.
+        SceneManager.LoadScene("Victory", LoadSceneMode.Single);
       }
     }
 
