@@ -37,6 +37,7 @@ public class Player : MonoBehaviour {
     public Vector2 throwForce = new Vector2(30, 30);
 
     public Animator Animator;
+    public bool IsDucking;
 
 
     // Start is called before the first frame update
@@ -86,7 +87,11 @@ public class Player : MonoBehaviour {
             Animator.SetBool("Jumping", !isGrounded);
             Animator.SetFloat("VerticalSpeed", rb.velocity.y);
             Animator.SetBool("HasBox", carriedBox != null);
+            Animator.SetBool("Ducking", IsDucking);
         }
+
+        // --------Ducking
+        IsDucking = Input.GetKey(KeyCode.S);
 
         // --------Box carrying
 
