@@ -36,6 +36,8 @@ public class Player : MonoBehaviour {
     public float PickupSpeed = 30f;
     public Vector2 throwForce = new Vector2(30, 30);
 
+    public Animator Animator;
+
 
     // Start is called before the first frame update
     void Start() {
@@ -52,6 +54,8 @@ public class Player : MonoBehaviour {
         // ---------- Movement
         //check if player is on the ground
         isGrounded = Physics2D.OverlapCircle(GroundCheckObject.position, GroundCheckRadius, GroundLayer);
+
+        Animator = GetComponentInChildren<Animator>();
 
         //jump into the air
         if (isGrounded && Input.GetButtonDown("Jump")) {
@@ -75,6 +79,13 @@ public class Player : MonoBehaviour {
             var s = Graphics.transform.localScale;
             s.x = facingLeft ? -1 : 1;
             Graphics.transform.localScale = s;
+        }
+
+        if (Animator != null) {
+            Animator.SetFloat("Speed", Mathf.Abs(rb.velocity.x));
+            Animator.SetBool("Jumping", !isGrounded);
+            Animator.SetFloat("VerticalSpeed", rb.velocity.y);
+            Animator.SetBool("HasBox", carriedBox != null);
         }
 
         // --------Box carrying
