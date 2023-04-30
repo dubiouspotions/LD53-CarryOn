@@ -26,20 +26,20 @@ public class Player : MonoBehaviour {
     public float hangTime = 0.2f;
     private float hangCounter;
 
-    public Transform ArmsStanding;
-    public Transform ArmsDucking;
-    public Transform ArmsHoldPos;
+    public Transform ArmsStandingPosition; // Just a positioning handle
+    public Transform ArmsDuckingPosition; // Just a positioning handle
+    public Transform ArmsUpPosition; // Just a positioning handle
+    public Transform Hand; //Moves between above positions and actually holds the box
     public float ArmRadius = 0.25f;
+    public float ArmRange = 1;
+
+    public Vector2 ThrowForce = new Vector2(1000, 1000);
 
     public Transform Feet;
 
     public LayerMask BoxesLayer;
 
     public GameObject carriedBox;
-    public Vector3 boxGrabOffset;
-
-    public Transform ThrowTarget;
-    public float ThrowTargetRadius;
 
     public SpriteRenderer SpriteRenderer;
     /// <summary>
@@ -50,14 +50,13 @@ public class Player : MonoBehaviour {
     /// How fast a box is picked up
     /// </summary>
     public float PickupSpeed = 30f;
-    public Vector2 throwForce = new Vector2(30, 30);
 
     public Animator Animator;
     public bool IsDucking;
     public bool IsHandsup;
     public bool IsCarrying => carriedBox != null;
+    public bool IsFacingLeft;
 
-    bool IsFacingLeft;
     // Start is called before the first frame update
     void Start() {
         rb = GetComponent<Rigidbody2D>();
@@ -74,7 +73,7 @@ public class Player : MonoBehaviour {
     private void Update() {
 
         CheckGameOver();
-        
+
 
         // ---------- Movement
         //check if player is on the ground -- Replaced by Box collider triggers above
@@ -180,33 +179,32 @@ public class Player : MonoBehaviour {
 
         // --------Box carrying
 
-        var grabBox = Input.GetKeyDown(KeyCode.E);
+        var arm = ArmsStandingPosition;
+        if (IsDucking) arm = ArmsDuckingPosition;
+        if (IsHandsup) arm = ArmsUpPosition;
+        Hand.transform.position = arm.transform.position;
 
+        // --------Box grabbing
+        var grabBox = Input.GetKeyDown(KeyCode.E);
         if (grabBox) {
             if (carriedBox == null) {
-                var arms = IsDucking ? ArmsDucking : ArmsStanding;
-                var boxCollider = Physics2D.OverlapCircle(arms.position, ArmRadius, BoxesLayer);
+                var boxCollider = Physics2D.OverlapCircle(Hand.position, ArmRadius, BoxesLayer);
                 if (boxCollider != null) {
                     carriedBox = boxCollider.gameObject;
-                    boxGrabOffset = carriedBox.transform.position - ArmsStanding.position;
-                    boxGrabOffset.y += 0.2f;
                     carriedBox.GetComponent<Rigidbody2D>().gravityScale = 0;
                     carriedBox.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeRotation;
                     Physics2D.IgnoreCollision(GetComponentInChildren<Collider2D>(), boxCollider, true);
                 }
             } else if (carriedBox) {
-                ;
                 carriedBox.GetComponent<Rigidbody2D>().gravityScale = 1;
                 carriedBox.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.None;
                 Physics2D.IgnoreCollision(GetComponentInChildren<Collider2D>(), carriedBox.GetComponentInChildren<Collider2D>(), false);
-                carriedBox = null;
-
-                var targetBox = Physics2D.OverlapCircle(ThrowTarget.position, ThrowTargetRadius, LayerMask.NameToLayer("Boxes")) as BoxCollider2D;
-                if (targetBox != null) {
-                    var targetPos = targetBox.transform.position;
-                    targetPos.y += targetBox.size.y / 2;
-                    Gizmos.DrawSphere(targetBox.transform.position, 0.2f);
+                if (IsHandsup) {
+                    var f = ThrowForce;
+                    f.x *= IsFacingLeft ? -1 : 1;
+                    carriedBox.GetComponent<Rigidbody2D>().AddForce(f);
                 }
+                carriedBox = null;
             }
         }
     }
@@ -222,10 +220,10 @@ public class Player : MonoBehaviour {
     }
 
     void UpdateCarriedBox() {
-        if (carriedBox != null && ArmsStanding != null) {
+        if (carriedBox != null && Hand != null) {
             var box = carriedBox.GetComponentInChildren<BoxCollider2D>();
             var corner = HeldCorner(box);
-            carriedBox.transform.position = ArmsStanding.position + corner;
+            carriedBox.transform.position = Hand.position + corner;
 
             var rot = carriedBox.transform.rotation.eulerAngles.z;
             var newRot = Quaternion.Euler(0, 0, Mathf.MoveTowardsAngle(
@@ -234,22 +232,22 @@ public class Player : MonoBehaviour {
         }
     }
 
-    void CheckGameOver(){
+    void CheckGameOver() {
         // Trigger game over if the player falls below a certain y value
         if (transform.position.y <= -30) {
-          SceneManager.LoadScene("GameOver", LoadSceneMode.Single);
+            SceneManager.LoadScene("GameOver", LoadSceneMode.Single);
         }
     }
 
     private void OnDrawGizmos() {
         UpdateCarriedBox();
         if (GroundCheckObject != null)
-            Gizmos.DrawSphere(GroundCheckObject.position, GroundCheckRadius);
-        if (ArmsStanding != null)
-            Gizmos.DrawSphere(ArmsStanding.position, ArmRadius);
-        if (ArmsDucking != null)
-            Gizmos.DrawSphere(ArmsDucking.position, ArmRadius);
-        if (ThrowTarget != null)
-            Gizmos.DrawSphere(ThrowTarget.position, ThrowTargetRadius);
+            Gizmos.DrawWireSphere(GroundCheckObject.position, GroundCheckRadius);
+        if (ArmsStandingPosition != null)
+            Gizmos.DrawWireSphere(ArmsStandingPosition.position, ArmRadius);
+        if (ArmsDuckingPosition != null)
+            Gizmos.DrawWireSphere(ArmsDuckingPosition.position, ArmRadius);
+        if (ArmsUpPosition != null)
+            Gizmos.DrawWireSphere(ArmsUpPosition.position, ArmRadius);
     }
 }
