@@ -27,6 +27,7 @@ public class Player : MonoBehaviour {
 
     public Transform ArmsStanding;
     public Transform ArmsDucking;
+    public Transform ArmsHoldPos;
     public float ArmRadius = 0.25f;
 
     public Transform Feet;
@@ -53,6 +54,7 @@ public class Player : MonoBehaviour {
     public Animator Animator;
     public bool IsDucking;
 
+    bool IsFacingLeft;
     // Start is called before the first frame update
     void Start() {
         rb = GetComponent<Rigidbody2D>();
@@ -87,9 +89,10 @@ public class Player : MonoBehaviour {
 
         Animator = GetComponentInChildren<Animator>();
 
-        //jump into the air
-        if (hangCounter > 0f && Input.GetButtonDown("Jump")) {
+        // jump into the air
+        if (hangCounter > 0f && Input.GetButtonDown("Jump") && !IsDucking) {
             rb.velocity += new Vector2(0, JumpForce);
+            // rb.AddForce(new Vector2(0, JumpForce * 3000));
         }
 
         // Allow jumps to semi-interrupted if the jump button is released early mid-jump
@@ -97,7 +100,8 @@ public class Player : MonoBehaviour {
             rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
         }
 
-        float xInput = Input.GetAxisRaw("Horizontal");
+        // No move when ducking
+        float xInput = IsDucking ? 0 : Input.GetAxisRaw("Horizontal");
         if (xInput != 0f) {
             rb.AddForce(new Vector2(
                 Deadzoned(xInput, 0.1f) * MoveSpeed * 100,
@@ -121,9 +125,9 @@ public class Player : MonoBehaviour {
         // are we moving?
         if (Mathf.Abs(xInput) > 0) {
             // are we facing where we think?
-            var facingLeft = xInput < 0;
+            IsFacingLeft = xInput < 0;
             var s = Graphics.transform.localScale;
-            s.x = facingLeft ? -1 : 1;
+            s.x = IsFacingLeft ? -1 : 1;
             Graphics.transform.localScale = s;
         }
 
@@ -136,7 +140,7 @@ public class Player : MonoBehaviour {
         }
 
         // --------Ducking
-        IsDucking = Input.GetKey(KeyCode.S);
+        IsDucking = Input.GetKey(KeyCode.S) && carriedBox == null;
 
         // --------Box carrying
 
@@ -144,7 +148,8 @@ public class Player : MonoBehaviour {
 
         if (grabBox) {
             if (carriedBox == null) {
-                var boxCollider = Physics2D.OverlapCircle(ArmsStanding.position, ArmRadius, BoxesLayer);
+                var arms = IsDucking ? ArmsDucking : ArmsStanding;
+                var boxCollider = Physics2D.OverlapCircle(arms.position, ArmRadius, BoxesLayer);
                 if (boxCollider != null) {
                     carriedBox = boxCollider.gameObject;
                     boxGrabOffset = carriedBox.transform.position - ArmsStanding.position;
@@ -154,6 +159,7 @@ public class Player : MonoBehaviour {
                     Physics2D.IgnoreCollision(GetComponentInChildren<Collider2D>(), boxCollider, true);
                 }
             } else if (carriedBox) {
+                ;
                 carriedBox.GetComponent<Rigidbody2D>().gravityScale = 1;
                 carriedBox.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.None;
                 Physics2D.IgnoreCollision(GetComponentInChildren<Collider2D>(), carriedBox.GetComponentInChildren<Collider2D>(), false);
@@ -167,22 +173,23 @@ public class Player : MonoBehaviour {
                 }
             }
         }
-
     }
 
     private void FixedUpdate() {
-
         UpdateCarriedBox();
+    }
+
+    Vector3 HeldCorner(BoxCollider2D box) {
+        var size = box.size / 2f;
+        if (IsFacingLeft) size.x = -size.x;
+        return size;
     }
 
     void UpdateCarriedBox() {
         if (carriedBox != null && ArmsStanding != null) {
             var box = carriedBox.GetComponentInChildren<BoxCollider2D>();
-            var boxSize = box.size / 2f;
-            print(boxGrabOffset.y + " " + boxSize.y);
-            if (boxGrabOffset.y < boxSize.y)
-                boxGrabOffset.y += PickupSpeed * Time.deltaTime;
-            carriedBox.transform.position = ArmsStanding.position + boxGrabOffset;
+            var corner = HeldCorner(box);
+            carriedBox.transform.position = ArmsStanding.position + corner;
 
             var rot = carriedBox.transform.rotation.eulerAngles.z;
             var newRot = Quaternion.Euler(0, 0, Mathf.MoveTowardsAngle(
