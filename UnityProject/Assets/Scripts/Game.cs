@@ -11,10 +11,10 @@ public class Game : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-      
+
     }
 
     public void StartGame() {
-        SceneManager.LoadScene("Level", LoadSceneMode.Single);
+        SceneManager.LoadScene("Level1", LoadSceneMode.Single);
     }
 }
