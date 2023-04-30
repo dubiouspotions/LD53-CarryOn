@@ -17,4 +17,8 @@ public class Game : MonoBehaviour {
     public void StartGame() {
         SceneManager.LoadScene("Level", LoadSceneMode.Single);
     }
+
+    public void DisplayVictoryScene() {
+      SceneManager.LoadScene("Victory", LoadSceneMode.Single);
+    }
 }

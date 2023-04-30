@@ -9,12 +9,18 @@ public class Box : MonoBehaviour {
     private Rigidbody2D rb;
 
 
+
     void Start() {
         sr = GetComponentInChildren<SpriteRenderer>();
         bc = GetComponent<BoxCollider2D>();
         rb = GetComponent<Rigidbody2D>();
         UpdateSpriteScale();
         rb.centerOfMass.Set(rb.centerOfMass.x, rb.centerOfMass.y + bc.size.y / 3);
+    }
+
+    void Update() {
+      
+
     }
 
     private void OnValidate() {
