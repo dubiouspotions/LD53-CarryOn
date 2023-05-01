@@ -56,6 +56,7 @@ public class Player : MonoBehaviour {
     public bool IsHandsup;
     public bool IsCarrying => carriedBox != null;
     public bool IsFacingLeft;
+    public bool IsDead;
 
     // Start is called before the first frame update
     void Start() {
@@ -74,6 +75,8 @@ public class Player : MonoBehaviour {
 
         CheckGameOver();
 
+
+        if (IsDead) return;
 
         // ---------- Movement
         //check if player is on the ground -- Replaced by Box collider triggers above
@@ -143,6 +146,7 @@ public class Player : MonoBehaviour {
             Animator.SetBool("HasBox", carriedBox != null);
             Animator.SetBool("Ducking", IsDucking);
             Animator.SetBool("HandsUp", IsHandsup);
+            Animator.SetBool("Dead", IsDead);
         }
 
         // -------- Up and down
@@ -234,7 +238,9 @@ public class Player : MonoBehaviour {
 
     void CheckGameOver() {
         // Trigger game over if the player falls below a certain y value
-        if (transform.position.y <= -30) {
+
+        IsDead = IsDead || transform.position.y <= -30;
+        if (IsDead) {
             SceneManager.LoadScene("GameOver", LoadSceneMode.Single);
         }
     }
