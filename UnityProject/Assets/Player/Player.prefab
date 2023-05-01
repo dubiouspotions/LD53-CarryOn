@@ -49,10 +49,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Graphics: {fileID: 7420116737442143870}
-  MoveSpeed: 10
-  MoveForce: 100
+  MoveSpeed: 8
+  MoveForce: 50
   JumpForce: 20
-  MovementDampening: 0.98
+  MovementDampening: 0.5
+  BoxCarryingSpeedMultiplier: 0.75
   GroundCheckObject: {fileID: 7420116735704850486}
   GroundCheckRadius: 0.1
   GroundLayer:
