@@ -238,11 +238,18 @@ public class Player : MonoBehaviour {
 
     void CheckGameOver() {
         // Trigger game over if the player falls below a certain y value
-
-        IsDead = IsDead || transform.position.y <= -30;
-        if (IsDead) {
-            SceneManager.LoadScene("GameOver", LoadSceneMode.Single);
+        if (transform.position.y <= -30) {
+            GotoGameOver();
         }
+    }
+
+    void KillSlowly() {
+        IsDead = true;
+        Animator.SetTrigger("Died");
+    }
+
+    void GotoGameOver() {
+        SceneManager.LoadScene("GameOver", LoadSceneMode.Single);
     }
 
     private void OnDrawGizmos() {
@@ -255,5 +262,9 @@ public class Player : MonoBehaviour {
             Gizmos.DrawWireSphere(ArmsDuckingPosition.position, ArmRadius);
         if (ArmsUpPosition != null)
             Gizmos.DrawWireSphere(ArmsUpPosition.position, ArmRadius);
+    }
+
+    void DeathAnimationComplete() {
+        GotoGameOver();
     }
 }
