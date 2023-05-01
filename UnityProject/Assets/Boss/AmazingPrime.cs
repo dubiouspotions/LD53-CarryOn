@@ -36,6 +36,7 @@ public class AmazingPrime : MonoBehaviour {
 
     void Death() {
         Destroy(GameObject.Find("Boxes"));
+        Destroy(GameObject.Find("Drones"));
 
         GameObject.Find("Player").GetComponent<Player>().PrepareToWin();
 
