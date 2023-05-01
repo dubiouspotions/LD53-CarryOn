@@ -34,7 +34,6 @@ public class Portal : MonoBehaviour {
     public void PlatformStarting() {
         var box = Instantiate(BoxPrefab, Platform.transform.position, Quaternion.identity);
         box.transform.SetParent(Platform);
-        box.transform.position += Vector3.forward;
         attachedBox = box.GetComponent<Box>();// get the box class
         attachedBox.SetCollisionEnabled(false);
     }

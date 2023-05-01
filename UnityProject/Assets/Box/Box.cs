@@ -59,5 +59,8 @@ public class Box : MonoBehaviour {
         foreach (var body in GetComponentsInChildren<Rigidbody2D>()) {
             body.simulated = enable;
         }
+
+        GetComponentInChildren<SpriteRenderer>().enabled = !enable;
+        GetComponentInChildren<MeshRenderer>().enabled = enable;
     }
 }
