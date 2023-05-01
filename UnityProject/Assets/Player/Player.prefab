@@ -50,7 +50,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Graphics: {fileID: 7420116737442143870}
   MoveSpeed: 10
-  MoveForce: 10
+  MoveForce: 100
   JumpForce: 20
   MovementDampening: 0.98
   GroundCheckObject: {fileID: 7420116735704850486}

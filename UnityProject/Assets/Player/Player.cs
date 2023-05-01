@@ -71,6 +71,26 @@ public class Player : MonoBehaviour {
         return value;
     }
 
+    private void FixedUpdate() {
+
+        // No move when ducking
+        float xInput = IsDucking ? 0 : Input.GetAxisRaw("Horizontal");
+        if (xInput != 0f) {
+            rb.AddForce(new Vector2(
+                Deadzoned(xInput, 0.1f) * MoveForce * 100,
+                Deadzoned(rb.velocity.y + 10f, 0.1f)
+            ));
+        }
+        // Limit speed or apply dampening
+        if (Mathf.Abs(rb.velocity.x) > MoveSpeed || xInput == 0) {
+            float dampening = xInput == 0 ? MovementDampening : 1;
+            float maxSpeed = Mathf.Min(MoveSpeed, xInput == 0 ? Mathf.Abs(rb.velocity.x) * dampening : MoveSpeed);
+            rb.velocity = new Vector2(
+                Deadzoned(maxSpeed * Mathf.Sign(rb.velocity.x)),
+                rb.velocity.y
+            );
+        }
+    }
     private void Update() {
 
         CheckGameOver();
@@ -108,28 +128,12 @@ public class Player : MonoBehaviour {
             rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
         }
 
-        // No move when ducking
-        float xInput = IsDucking ? 0 : Input.GetAxisRaw("Horizontal");
-        if (xInput != 0f) {
-            rb.AddForce(new Vector2(
-                Deadzoned(xInput, 0.1f) * MoveForce * 100,
-                Deadzoned(rb.velocity.y + 10f, 0.1f)
-            ));
-        }
-        // Limit speed or apply dampening
-        if (Mathf.Abs(rb.velocity.x) > MoveSpeed || xInput == 0) {
-            float dampening = xInput == 0 ? MovementDampening : 1;
-            float maxSpeed = Mathf.Min(MoveSpeed, xInput == 0 ? Mathf.Abs(rb.velocity.x) * dampening : MoveSpeed);
-            rb.velocity = new Vector2(
-                Deadzoned(maxSpeed * Mathf.Sign(rb.velocity.x)),
-                rb.velocity.y
-            );
-        }
 
         if (Graphics != null) {
             Graphics.transform.eulerAngles = Vector3.zero;
         }
 
+        float xInput = IsDucking ? 0 : Input.GetAxisRaw("Horizontal");
         // are we moving?
         if (Mathf.Abs(xInput) > 0) {
             // are we facing where we think?
