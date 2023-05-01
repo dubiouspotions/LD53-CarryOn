@@ -11,6 +11,7 @@ public class Portal : MonoBehaviour {
 
     public GameObject BoxPrefab;
 
+    public int BoxSpawnCount = 1;
 
     bool _IsEndPortal;
     public bool IsEndPortal;
@@ -48,5 +49,18 @@ public class Portal : MonoBehaviour {
         box.transform.SetParent(GameObject.Find("Boxes").transform);
         box.SetCollisionEnabled(true);
         attachedBox = null;
+    }
+
+    private void OnTriggerEnter2D(Collider2D other) {
+        print("Spawning box");
+        //if (other.transform.GetComponent<Player>() != null) {
+        SpawnBox();
+        //}
+    }
+
+    public void SpawnBox() {
+        if (BoxSpawnCount <= 0) return;
+        BoxSpawnCount -= 1;
+        animator.SetTrigger("Open");
     }
 }
