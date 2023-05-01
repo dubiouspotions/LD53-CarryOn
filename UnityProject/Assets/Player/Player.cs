@@ -10,6 +10,7 @@ public class Player : MonoBehaviour {
 
 
     public float MoveSpeed = 50f;
+    public float MoveForce = 50 * 100f;
     public float JumpForce = 30f;
     // How fast to stop without input
     public float MovementDampening = 0.2f;
@@ -30,7 +31,6 @@ public class Player : MonoBehaviour {
     public Transform ArmsDuckingPosition; // Just a positioning handle
     public Transform ArmsUpPosition; // Just a positioning handle
     public Transform Hand; //Moves between above positions and actually holds the box
-    public float ArmRadius = 0.25f;
     public float ArmRange = 1;
 
     public Vector2 ThrowForce = new Vector2(1000, 1000);
@@ -112,14 +112,14 @@ public class Player : MonoBehaviour {
         float xInput = IsDucking ? 0 : Input.GetAxisRaw("Horizontal");
         if (xInput != 0f) {
             rb.AddForce(new Vector2(
-                Deadzoned(xInput, 0.1f) * MoveSpeed * 100,
-                Deadzoned(rb.velocity.y, 0.1f)
+                Deadzoned(xInput, 0.1f) * MoveForce * 100,
+                Deadzoned(rb.velocity.y + 10f, 0.1f)
             ));
         }
         // Limit speed or apply dampening
         if (Mathf.Abs(rb.velocity.x) > MoveSpeed || xInput == 0) {
             float dampening = xInput == 0 ? MovementDampening : 1;
-            float maxSpeed = xInput == 0 ? Mathf.Abs(rb.velocity.x) * dampening : MoveSpeed;
+            float maxSpeed = Mathf.Min(MoveSpeed, xInput == 0 ? Mathf.Abs(rb.velocity.x) * dampening : MoveSpeed);
             rb.velocity = new Vector2(
                 Deadzoned(maxSpeed * Mathf.Sign(rb.velocity.x)),
                 rb.velocity.y
@@ -186,23 +186,29 @@ public class Player : MonoBehaviour {
         var arm = ArmsStandingPosition;
         if (IsDucking) arm = ArmsDuckingPosition;
         if (IsHandsup) arm = ArmsUpPosition;
-        Hand.transform.position = arm.transform.position;
+        Hand.transform.position = arm.transform.position.xy0();
+        var handRadius = arm.transform.position.z;
 
         // --------Box grabbing
         var grabBox = Input.GetKeyDown(KeyCode.E);
         if (grabBox) {
             if (carriedBox == null) {
-                var boxCollider = Physics2D.OverlapCircle(Hand.position, ArmRadius, BoxesLayer);
+                var boxCollider = Physics2D.OverlapCircle(Hand.position, handRadius, BoxesLayer);
                 if (boxCollider != null) {
                     carriedBox = boxCollider.gameObject;
                     carriedBox.GetComponent<Rigidbody2D>().gravityScale = 0;
                     carriedBox.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeRotation;
-                    Physics2D.IgnoreCollision(GetComponentInChildren<Collider2D>(), boxCollider, true);
+                    foreach (var collider in GetComponentsInChildren<Collider2D>()) {
+                        Physics2D.IgnoreCollision(collider, boxCollider, true);
+                    }
                 }
             } else if (carriedBox) {
                 carriedBox.GetComponent<Rigidbody2D>().gravityScale = 1;
                 carriedBox.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.None;
-                Physics2D.IgnoreCollision(GetComponentInChildren<Collider2D>(), carriedBox.GetComponentInChildren<Collider2D>(), false);
+                var boxCollider = carriedBox.GetComponentInChildren<Collider2D>();
+                foreach (var collider in GetComponentsInChildren<Collider2D>()) {
+                    Physics2D.IgnoreCollision(collider, boxCollider, false);
+                }
                 if (IsHandsup) {
                     var f = ThrowForce;
                     f.x *= IsFacingLeft ? -1 : 1;
@@ -252,19 +258,37 @@ public class Player : MonoBehaviour {
         SceneManager.LoadScene("GameOver", LoadSceneMode.Single);
     }
 
+    void DrawHandGizmo(Transform hand) {
+        var v = hand.position;
+        float r = v.z;
+        v.z = 0;
+        Gizmos.DrawWireSphere(v, r);
+    }
+
     private void OnDrawGizmos() {
         UpdateCarriedBox();
         if (GroundCheckObject != null)
             Gizmos.DrawWireSphere(GroundCheckObject.position, GroundCheckRadius);
         if (ArmsStandingPosition != null)
-            Gizmos.DrawWireSphere(ArmsStandingPosition.position, ArmRadius);
+            DrawHandGizmo(ArmsStandingPosition);
         if (ArmsDuckingPosition != null)
-            Gizmos.DrawWireSphere(ArmsDuckingPosition.position, ArmRadius);
+            DrawHandGizmo(ArmsDuckingPosition);
         if (ArmsUpPosition != null)
-            Gizmos.DrawWireSphere(ArmsUpPosition.position, ArmRadius);
+            DrawHandGizmo(ArmsUpPosition);
     }
 
     void DeathAnimationComplete() {
         GotoGameOver();
+    }
+}
+
+
+public static class VecTools {
+    public static Vector2 xy(this Vector3 v) {
+        return new Vector2(v.x, v.y);
+    }
+
+    public static Vector3 xy0(this Vector3 v) {
+        return new Vector3(v.x, v.y, 0);
     }
 }
