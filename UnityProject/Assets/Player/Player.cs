@@ -217,6 +217,7 @@ public class Player : MonoBehaviour {
                 carriedBox = null;
             }
         }
+        UpdateCarriedBox();
     }
 
     private void FixedUpdate() {
