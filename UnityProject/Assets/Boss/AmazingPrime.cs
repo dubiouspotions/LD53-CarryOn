@@ -26,4 +26,11 @@ public class AmazingPrime : MonoBehaviour {
     private void OnValidate() {
         Update();
     }
+
+    private void OnTriggerEnter2D(Collider2D other) {
+        print("Prime got a present: " + other.gameObject.name);
+        if (other.gameObject.name.Contains("HeroBox")) {
+            animator.SetTrigger("Died");
+        }
+    }
 }
