@@ -7,5 +7,5 @@ PhysicsMaterial2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: BoxMaterial
-  friction: 3.14
+  friction: 12.92
   bounciness: 0
