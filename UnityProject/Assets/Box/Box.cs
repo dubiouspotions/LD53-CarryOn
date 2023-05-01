@@ -10,12 +10,12 @@ public class Box : MonoBehaviour {
     public Transform CenterOfMass;
 
 
+
     void Start() {
         sr = GetComponentInChildren<SpriteRenderer>();
         bc = GetComponent<BoxCollider2D>();
         rb = GetComponent<Rigidbody2D>();
         UpdateSpriteScale();
-
     }
 
     void Update() {
@@ -49,5 +49,15 @@ public class Box : MonoBehaviour {
     private void OnDrawGizmosSelected() {
         UpdateSpriteScale();
         Gizmos.DrawSphere(rb.position + rb.centerOfMass, .1f);
+    }
+
+
+    public void SetCollisionEnabled(bool enable) {
+        foreach (var collider in GetComponentsInChildren<Collider2D>()) {
+            collider.enabled = enable;
+        }
+        foreach (var body in GetComponentsInChildren<Rigidbody2D>()) {
+            body.simulated = enable;
+        }
     }
 }
