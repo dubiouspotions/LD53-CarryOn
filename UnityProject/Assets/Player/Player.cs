@@ -72,6 +72,7 @@ public class Player : MonoBehaviour {
     }
 
     private void FixedUpdate() {
+        if (IsDead) return;
 
         // No move when ducking
         float xInput = IsDucking ? 0 : Input.GetAxisRaw("Horizontal");
@@ -251,8 +252,10 @@ public class Player : MonoBehaviour {
     }
 
     public void KillSlowly() {
-        IsDead = true;
-        Animator.SetTrigger("Died");
+        if (!IsDead) {
+            IsDead = true;
+            Animator.SetTrigger("Died");
+        }
     }
 
     void GotoGameOver() {
