@@ -31,6 +31,8 @@ AnimationClip:
       value: {fileID: 21300000, guid: 606c529c4393d42479e640b25cc97042, type: 3}
     - time: 0.9
       value: {fileID: 21300000, guid: d0d9a88dda0a54915b852d03b0920f6b, type: 3}
+    - time: 1.0833334
+      value: {fileID: 21300000, guid: d0d9a88dda0a54915b852d03b0920f6b, type: 3}
     attribute: m_Sprite
     path: GFX/Sprite
     classID: 212
@@ -43,7 +45,7 @@ AnimationClip:
   m_ClipBindingConstant:
     genericBindings:
     - serializedVersion: 2
-      path: 0
+      path: 237077551
       attribute: 0
       script: {fileID: 0}
       typeID: 212
@@ -56,12 +58,13 @@ AnimationClip:
     - {fileID: 21300000, guid: 5223bddb227564106a26ab72187395dc, type: 3}
     - {fileID: 21300000, guid: 606c529c4393d42479e640b25cc97042, type: 3}
     - {fileID: 21300000, guid: d0d9a88dda0a54915b852d03b0920f6b, type: 3}
+    - {fileID: 21300000, guid: d0d9a88dda0a54915b852d03b0920f6b, type: 3}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 0.9166666
+    m_StopTime: 1.1
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0
