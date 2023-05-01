@@ -62,5 +62,7 @@ public class Box : MonoBehaviour {
 
         GetComponentInChildren<SpriteRenderer>().enabled = !enable;
         GetComponentInChildren<MeshRenderer>().enabled = enable;
+
+        UpdateSpriteScale();
     }
 }
