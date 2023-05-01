@@ -11,24 +11,33 @@ public class Portal : MonoBehaviour {
 
     public GameObject BoxPrefab;
 
+
+    bool _IsEndPortal;
+    public bool IsEndPortal;
+
     bool _isOpen;
     public bool IsOpen;
 
     Box attachedBox;
-
-    void DoOpen() {
-        _isOpen = true;
-        animator.SetTrigger("Open");
-    }
 
     void Start() {
 
     }
 
     void Update() {
-        if (IsOpen && !_isOpen) {
-            DoOpen();
+        if (IsOpen != _isOpen) {
+            _isOpen = IsOpen;
+            animator.SetTrigger("Open");
         }
+        if (IsEndPortal != _IsEndPortal) {
+            _IsEndPortal = IsEndPortal;
+            if (IsEndPortal)
+                animator.SetTrigger("IsEndPortal");
+        }
+    }
+
+    private void OnValidate() {
+        Update();
     }
 
     public void PlatformStarting() {
