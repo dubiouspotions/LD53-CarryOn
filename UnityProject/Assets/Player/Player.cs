@@ -14,6 +14,7 @@ public class Player : MonoBehaviour {
     public float JumpForce = 30f;
     // How fast to stop without input
     public float MovementDampening = 0.2f;
+    public float BoxCarryingSpeedMultiplier = 0.5f;
 
 
     public Transform GroundCheckObject;
@@ -71,21 +72,34 @@ public class Player : MonoBehaviour {
         return value;
     }
 
+    float baseFriction;
+
     private void FixedUpdate() {
         if (IsDead) return;
 
         // No move when ducking
         float xInput = IsDucking ? 0 : Input.GetAxisRaw("Horizontal");
+        if (baseFriction == 0) baseFriction = rb.sharedMaterial.friction;
+        rb.sharedMaterial.friction = 0;//xInput == 0 ? baseFriction : 1;
+        var penalty = carriedBox == null ? 1 : BoxCarryingSpeedMultiplier;
         if (xInput != 0f) {
-            rb.AddForce(new Vector2(
-                Deadzoned(xInput, 0.1f) * MoveForce * 100,
-                Deadzoned(rb.velocity.y + 10f, 0.1f)
-            ));
+            if (isGrounded) {
+                rb.velocity = new Vector2(
+                Deadzoned(xInput, 0.1f) * MoveSpeed * penalty,
+                Deadzoned(rb.velocity.y, 0.1f)
+            );
+            } else {
+                rb.AddForce(new Vector2(
+                    Deadzoned(xInput, 0.1f) * MoveForce * penalty * 100,
+                    Deadzoned(rb.velocity.y + 10f, 0.1f)
+                ));
+            }
+
         }
         // Limit speed or apply dampening
         if (Mathf.Abs(rb.velocity.x) > MoveSpeed || xInput == 0) {
             float dampening = xInput == 0 ? MovementDampening : 1;
-            float maxSpeed = Mathf.Min(MoveSpeed, xInput == 0 ? Mathf.Abs(rb.velocity.x) * dampening : MoveSpeed);
+            float maxSpeed = Mathf.Min(MoveSpeed, xInput == 0 ? Mathf.Abs(rb.velocity.x) * dampening : MoveSpeed) * penalty;
             rb.velocity = new Vector2(
                 Deadzoned(maxSpeed * Mathf.Sign(rb.velocity.x)),
                 rb.velocity.y
@@ -118,15 +132,16 @@ public class Player : MonoBehaviour {
 
         Animator = GetComponentInChildren<Animator>();
 
+        var MovePenalty = carriedBox == null ? 1 : BoxCarryingSpeedMultiplier;
         // jump into the air
         if (hangCounter > 0f && Input.GetButtonDown("Jump") && !IsDucking) {
-            rb.velocity += new Vector2(0, JumpForce);
+            rb.velocity += new Vector2(0, JumpForce) * MovePenalty;
             // rb.AddForce(new Vector2(0, JumpForce * 3000));
         }
 
         // Allow jumps to semi-interrupted if the jump button is released early mid-jump
         if (Input.GetButtonUp("Jump") && rb.velocity.y > 0) {
-            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
+            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f) * MovePenalty;
         }
 
 
