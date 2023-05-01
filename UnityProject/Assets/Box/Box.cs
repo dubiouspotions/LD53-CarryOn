@@ -18,11 +18,6 @@ public class Box : MonoBehaviour {
         UpdateSpriteScale();
     }
 
-    void Update() {
-
-
-    }
-
     private void OnValidate() {
         UpdateSpriteScale();
     }
@@ -62,5 +57,7 @@ public class Box : MonoBehaviour {
 
         GetComponentInChildren<SpriteRenderer>().enabled = !enable;
         GetComponentInChildren<MeshRenderer>().enabled = enable;
+
+        UpdateSpriteScale();
     }
 }
