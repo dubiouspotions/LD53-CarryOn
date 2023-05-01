@@ -4,41 +4,30 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 
-public class DeliveryPoint : MonoBehaviour
-{
+public class DeliveryPoint : MonoBehaviour {
 
     private BoxCollider2D bc;
     public bool isTriggered = false;
     public bool isTriggeredByBox = false;
 
-    // Start is called before the first frame update
-    void Start() {
-      // bc = GetComponent<BoxCollider2D>;
-    }
-
-    // Update is called once per frame
-    void Update() {
-
-    }
-
 
     void OnTriggerEnter2D(Collider2D other) {
 
-      isTriggered = true;
-      if (other.GetComponent<Box>() != null) {
-        isTriggeredByBox = true;
+        isTriggered = true;
+        if (other.GetComponent<Box>() != null) {
+            isTriggeredByBox = true;
 
-        // This should probably be handled in Game.cs but I don't know how to easily access it from here.
-        SceneManager.LoadScene("Victory", LoadSceneMode.Single);
-      }
+            // This should probably be handled in Game.cs but I don't know how to easily access it from here.
+            SceneManager.LoadScene("Victory", LoadSceneMode.Single);
+        }
     }
 
 
     void OnTriggerExit2D(Collider2D other) {
 
-      isTriggered = false;
-      if (other.GetComponent<Box>() != null) {
-        isTriggeredByBox = false;
-      }
+        isTriggered = false;
+        if (other.GetComponent<Box>() != null) {
+            isTriggeredByBox = false;
+        }
     }
 }

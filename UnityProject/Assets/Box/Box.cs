@@ -18,11 +18,6 @@ public class Box : MonoBehaviour {
         UpdateSpriteScale();
     }
 
-    void Update() {
-
-
-    }
-
     private void OnValidate() {
         UpdateSpriteScale();
     }

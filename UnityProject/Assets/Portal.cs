@@ -20,11 +20,7 @@ public class Portal : MonoBehaviour {
 
     Box attachedBox;
 
-    void Start() {
-
-    }
-
-    void Update() {
+    void FixedUpdate() {
         if (IsOpen != _isOpen) {
             _isOpen = IsOpen;
             animator.SetTrigger("Open");
@@ -37,7 +33,7 @@ public class Portal : MonoBehaviour {
     }
 
     private void OnValidate() {
-        Update();
+        FixedUpdate();
     }
 
     public void PlatformStarting() {

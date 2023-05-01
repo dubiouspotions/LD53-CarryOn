@@ -92,7 +92,7 @@ public class Player : MonoBehaviour {
         if (isGrounded) {
             hangCounter = hangTime;
         } else {
-            hangCounter -= Time.deltaTime;
+            hangCounter -= Time.fixedDeltaTime;
         }
 
         Animator = GetComponentInChildren<Animator>();
@@ -220,10 +220,6 @@ public class Player : MonoBehaviour {
         UpdateCarriedBox();
     }
 
-    private void FixedUpdate() {
-        UpdateCarriedBox();
-    }
-
     Vector3 HeldCorner(BoxCollider2D box) {
         var size = box.size / 2f;
         if (IsFacingLeft) size.x = -size.x;
@@ -238,7 +234,7 @@ public class Player : MonoBehaviour {
 
             var rot = carriedBox.transform.rotation.eulerAngles.z;
             var newRot = Quaternion.Euler(0, 0, Mathf.MoveTowardsAngle(
-                rot, (int)(rot / 90) * 90, PickupStraighteningSpeed * Time.deltaTime
+                rot, (int)(rot / 90) * 90, PickupStraighteningSpeed * Time.fixedDeltaTime
             ));
         }
     }
