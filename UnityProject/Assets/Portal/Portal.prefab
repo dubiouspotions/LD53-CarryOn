@@ -155,7 +155,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Platform: {fileID: 6806285650982280536}
-  BoxPrefab: {fileID: 3807138714967384257, guid: 578e4526746554b47876cd90ca7ce11a, type: 3}
+  BoxPrefab: {fileID: 1196068216948134347, guid: a95fe47d915b04f0c90ec5676133d2c0, type: 3}
   IsEndPortal: 0
   IsOpen: 0
 --- !u!61 &6748711564788858884
@@ -171,7 +171,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.082748175, y: 0.22726603}
+  m_Offset: {x: -0.021973431, y: 0.5007527}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -182,7 +182,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.58276296, y: 0.27507964}
+  m_Size: {x: 2.1297588, y: 0.82205296}
   m_EdgeRadius: 0
 --- !u!1 &3244438580227221545
 GameObject:

@@ -9,7 +9,7 @@ public class Box : MonoBehaviour {
     private Rigidbody2D rb;
     public Transform CenterOfMass;
 
-
+    public bool IsHeroBox => name.Contains("HeroBox");
 
     void Start() {
         sr = GetComponentInChildren<SpriteRenderer>();
