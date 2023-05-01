@@ -250,7 +250,7 @@ public class Player : MonoBehaviour {
         }
     }
 
-    void KillSlowly() {
+    public void KillSlowly() {
         IsDead = true;
         Animator.SetTrigger("Died");
     }
