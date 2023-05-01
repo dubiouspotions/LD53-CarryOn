@@ -327,7 +327,7 @@ public class Player : MonoBehaviour
 
   void GotoGameOver()
   {
-    SceneManager.LoadScene("GameOver", LoadSceneMode.Single);
+    SceneManager.LoadScene("Level0", LoadSceneMode.Single);
   }
 
   void DrawHandGizmo(Transform hand)
