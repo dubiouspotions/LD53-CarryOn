@@ -35,6 +35,10 @@ public class AmazingPrime : MonoBehaviour {
     }
 
     void Death() {
+        Destroy(GameObject.Find("Boxes"));
+
+        GameObject.Find("Player").GetComponent<Player>().PrepareToWin();
+
         transform.Find("Cone").GetComponent<SpriteRenderer>().enabled = false;
         animator.SetTrigger("Died");
     }
@@ -45,5 +49,9 @@ public class AmazingPrime : MonoBehaviour {
             Destroy(other.gameObject);
             Death();
         }
+    }
+
+    private void DeathComplete() {
+        GameObject.Find("Player").GetComponent<Player>().SamusForvandlaMig();
     }
 }
