@@ -69,7 +69,7 @@ AnimationClip:
   m_ClipBindingConstant:
     genericBindings:
     - serializedVersion: 2
-      path: 0
+      path: 237077551
       attribute: 0
       script: {fileID: 0}
       typeID: 212
@@ -121,7 +121,7 @@ AnimationClip:
   m_HasMotionFloatCurves: 0
   m_Events:
   - time: 3.8333333
-    functionName: 
+    functionName: DeathAnimationComplete
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0

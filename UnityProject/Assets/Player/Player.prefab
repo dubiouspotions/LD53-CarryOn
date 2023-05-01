@@ -50,6 +50,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Graphics: {fileID: 7420116737442143870}
   MoveSpeed: 10
+  MoveForce: 10
   JumpForce: 20
   MovementDampening: 0.98
   GroundCheckObject: {fileID: 7420116735704850486}
@@ -64,9 +65,8 @@ MonoBehaviour:
   ArmsDuckingPosition: {fileID: 7420116736580980668}
   ArmsUpPosition: {fileID: 7420116737442125645}
   Hand: {fileID: 1961672552623167489}
-  ArmRadius: 0.24
   ArmRange: 1
-  ThrowForce: {x: 100000, y: 100000}
+  ThrowForce: {x: 40000, y: 40000}
   Feet: {fileID: 0}
   BoxesLayer:
     serializedVersion: 2
@@ -75,7 +75,7 @@ MonoBehaviour:
   SpriteRenderer: {fileID: 7420116736696124912}
   PickupStraighteningSpeed: 30
   PickupSpeed: 30
-  Animator: {fileID: 0}
+  Animator: {fileID: 7315991226538013517}
   IsDucking: 0
   IsHandsup: 0
   IsFacingLeft: 0
@@ -199,7 +199,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7420116735704850487}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.834, z: 0}
+  m_LocalPosition: {x: 0, y: -0.858, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -256,7 +256,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7420116735763382793}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.274, y: -0.142, z: 0}
+  m_LocalPosition: {x: 0.236, y: -0.096, z: 0.57}
   m_LocalScale: {x: 1, y: 0, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -287,7 +287,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7420116736580980669}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.56, y: -1.01, z: 0}
+  m_LocalPosition: {x: 0.729, y: -1.01, z: 0.44}
   m_LocalScale: {x: 1, y: 0, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -305,6 +305,7 @@ GameObject:
   - component: {fileID: 7420116736696124911}
   - component: {fileID: 7420116736696124912}
   - component: {fileID: 5681222865435371307}
+  - component: {fileID: 1849784850472656435}
   m_Layer: 0
   m_Name: Sprite
   m_TagString: Untagged
@@ -365,8 +366,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 1366420975
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: a93af06ef15d94483b0ba0dc8ceffd5f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -392,7 +393,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0, y: -0.027311169}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -403,8 +404,36 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.15, y: 0.3}
-  m_EdgeRadius: 0
+  m_Size: {x: 0.15, y: 0.22626849}
+  m_EdgeRadius: 0.09
+--- !u!60 &1849784850472656435
+PolygonCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7420116736696124908}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 0.32, y: 0.32}
+    newSize: {x: 0.32, y: 0.32}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Points:
+    m_Paths:
+    - - {x: 0.0858991, y: 0.08989416}
+      - {x: 0.0051781386, y: 0.18480316}
+      - {x: -0.08840376, y: 0.09073072}
 --- !u!1 &7420116737176141940
 GameObject:
   m_ObjectHideFlags: 0
@@ -460,7 +489,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7420116737442125642}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.444, y: 0.637, z: 0}
+  m_LocalPosition: {x: -0.38, y: 0.677, z: 0.2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

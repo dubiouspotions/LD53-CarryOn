@@ -57,8 +57,8 @@ Transform:
   m_GameObject: {fileID: 3807138714790873097}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 3.846154, y: 3.846154, z: 1}
-  m_ConstrainProportionsScale: 1
+  m_LocalScale: {x: 3.3846154, y: 3.3846154, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8558905634414932751}
   m_Father: {fileID: 3807138714967384258}
@@ -102,15 +102,15 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingLayerID: 1378352603
+  m_SortingLayer: 3
+  m_SortingOrder: 2
   m_Sprite: {fileID: 21300000, guid: 87398e721fe384401bd1e50d50a96e81, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.88, y: 0.88}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -165,7 +165,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 1
-  m_Mass: 100
+  m_Mass: 77.44
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 1
@@ -198,8 +198,8 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 1}
-  m_EdgeRadius: 0
+  m_Size: {x: 0.88, y: 0.88}
+  m_EdgeRadius: 0.06
 --- !u!114 &7023213973379642258
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -296,7 +296,7 @@ TextMesh:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7487890937096941445}
-  m_Text: 100Kg
+  m_Text: 77Kg
   m_OffsetZ: 0
   m_CharacterSize: 0.15
   m_LineSpacing: 1
@@ -320,7 +320,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2697018252439372944}
   - component: {fileID: 7881317435661289739}
-  - component: {fileID: 6160977466967135029}
   - component: {fileID: 424798336560730751}
   m_Layer: 7
   m_Name: Cube
@@ -386,19 +385,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &6160977466967135029
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8876020506249317392}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!33 &424798336560730751
 MeshFilter:
   m_ObjectHideFlags: 0
