@@ -314,6 +314,10 @@ public class Player : MonoBehaviour {
     public void SamusForvandlaMig() {
         Animator.SetTrigger("Winning");
     }
+
+    public void SamusHasBeenRevealed() {
+        SceneManager.LoadScene("Victory", LoadSceneMode.Single);
+    }
 }
 
 
